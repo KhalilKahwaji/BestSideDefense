@@ -3,6 +3,7 @@ using System.Collections;
 
 public class Tower : MonoBehaviour
 {
+    public AudioClip clip;
     [Header("Tower Stats")]
     public float damage = 10f;
     public float attackSpeed = 1f; // Attacks per second
@@ -12,6 +13,7 @@ public class Tower : MonoBehaviour
     [Header("References")]
     public Transform firePoint; // Where bullets spawn from
     public GameObject bulletPrefab; // Bullet object to instantiate (optional if using child)
+ 
 
     [Header("Debug")]
     public bool showRange = true;
@@ -35,11 +37,10 @@ public class Tower : MonoBehaviour
         );
 
         // Get bullet from first child if bulletPrefab is not assigned
-        if (bulletPrefab == null && transform.childCount > 0)
-        {
-            bulletTemplate = transform.GetChild(0).gameObject;
-            bulletTemplate.SetActive(false); // Make sure it's disabled
-        }
+
+        bulletTemplate = transform.GetChild(0).gameObject;
+        bulletTemplate.SetActive(false); // Make sure it's disabled
+
 
         // Start looking for enemies
         InvokeRepeating("UpdateTarget", 0f, 0.5f);
@@ -118,6 +119,7 @@ public class Tower : MonoBehaviour
 
     void Shoot()
     {
+        SFXManager.Instance.Play(clip);
         GameObject bulletSource = bulletPrefab != null ? bulletPrefab : bulletTemplate;
 
         if (bulletSource == null)
