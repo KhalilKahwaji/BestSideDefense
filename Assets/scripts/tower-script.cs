@@ -9,6 +9,7 @@ public class Tower : MonoBehaviour
     public float attackSpeed = 1f; // Attacks per second
     public float range = 5f;
     public int price = 100; // Cost to build this tower
+    public int pierce = 0;
 
     [Header("References")]
     public Transform firePoint; // Where bullets spawn from
@@ -23,18 +24,22 @@ public class Tower : MonoBehaviour
     private Vector3 buildPosition; // Position where tower was placed
     private GameObject bulletTemplate; // Reference to bullet child
 
+    [Header("Buff")]
+    public BuffType buffType;
+
+    // Optional buff values (easy to tune per tower)
+    public float buffSpeedAmount = 1f;
+    public float buffDamageAmount = 10f;
+    public float buffRangeAmount = 1f;
+    public int buffPierceAmount = 1;
+
     void Start()
     {
         // Store the position where tower was placed
         buildPosition = transform.position;
 
         // Snap to grid center if using tilemap placement
-        // This ensures tower stays centered on the tile
-        transform.position = new Vector3(
-            Mathf.Round(transform.position.x),
-            Mathf.Round(transform.position.y),
-            transform.position.z
-        );
+
 
         // Get bullet from first child if bulletPrefab is not assigned
 
@@ -131,12 +136,15 @@ public class Tower : MonoBehaviour
         // Spawn bullet at fire point
         Transform spawnPoint = firePoint != null ? firePoint : transform;
         GameObject bulletObj = Instantiate(bulletSource, spawnPoint.position, spawnPoint.rotation);
+        bulletObj.GetComponent<Bullet>().pierce = pierce;
         bulletObj.SetActive(true); // Make sure instantiated bullet is active
 
         // Store target reference for the bullet to use later
         // The bullet script will need to access this when you create it
         bulletObj.SendMessage("SetTarget", target, SendMessageOptions.DontRequireReceiver);
         bulletObj.SendMessage("SetDamage", damage, SendMessageOptions.DontRequireReceiver);
+
+
     }
 
     void OnDrawGizmosSelected()
